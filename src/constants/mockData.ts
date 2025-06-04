@@ -1,5 +1,5 @@
 
-import type { JobListing, Industry, JobType, ExperienceLevel } from '@/types';
+import type { JobListing, Industry, JobType, ExperienceLevel, Category, Employer, Testimonial } from '@/types';
 
 export const mockJobs: JobListing[] = [
   {
@@ -15,6 +15,8 @@ export const mockJobs: JobListing[] = [
     experienceLevel: 'Senior',
     postedDate: '2024-07-20',
     logoUrl: 'https://placehold.co/100x100.png',
+    isFeatured: true,
+    salaryRange: '$2000-$3000',
   },
   {
     id: '2',
@@ -29,6 +31,7 @@ export const mockJobs: JobListing[] = [
     experienceLevel: 'Mid-level',
     postedDate: '2024-07-18',
     logoUrl: 'https://placehold.co/100x100.png',
+    salaryRange: '$1500-$2500',
   },
   {
     id: '3',
@@ -42,6 +45,8 @@ export const mockJobs: JobListing[] = [
     jobType: 'Full-time',
     experienceLevel: 'Mid-level',
     postedDate: '2024-07-22',
+    isFeatured: true,
+    salaryRange: '$1000-$1800',
   },
   {
     id: '4',
@@ -56,6 +61,7 @@ export const mockJobs: JobListing[] = [
     experienceLevel: 'Mid-level',
     postedDate: '2024-07-15',
     logoUrl: 'https://placehold.co/100x100.png',
+    salaryRange: '$800-$1500',
   },
   {
     id: '5',
@@ -69,6 +75,8 @@ export const mockJobs: JobListing[] = [
     jobType: 'Internship',
     experienceLevel: 'Entry',
     postedDate: '2024-07-25',
+    isFeatured: true,
+    salaryRange: 'Competitive Stipend',
   },
   {
     id: '6',
@@ -82,6 +90,7 @@ export const mockJobs: JobListing[] = [
     jobType: 'Full-time',
     experienceLevel: 'Senior',
     postedDate: '2024-07-10',
+    salaryRange: '$2500-$3500',
   },
    {
     id: '7',
@@ -91,11 +100,13 @@ export const mockJobs: JobListing[] = [
     snippet: 'We are looking for a talented UX Designer to create intuitive and engaging user experiences for our web and mobile products.',
     fullDescription: 'Creative Labs is at the forefront of user-centered design in Ethiopia. As a UX Designer, you will conduct user research, create wireframes, prototypes, and user flows, and collaborate with product managers and engineers to deliver outstanding digital products. Requirements: 3+ years of UX design experience. A strong portfolio showcasing your design process and solutions. Proficiency in design tools like Figma, Sketch, or Adobe XD.',
     jobUrl: 'https://example.com/job/7',
-    industry: 'Technology',
+    industry: 'Design',
     jobType: 'Full-time',
     experienceLevel: 'Mid-level',
     postedDate: '2024-07-28',
     logoUrl: 'https://placehold.co/100x100.png',
+    isFeatured: true,
+    salaryRange: '$1800-$2800',
   },
   {
     id: '8',
@@ -109,6 +120,7 @@ export const mockJobs: JobListing[] = [
     jobType: 'Full-time',
     experienceLevel: 'Manager',
     postedDate: '2024-07-26',
+    salaryRange: '$2200-$3200 + Commission',
   },
   {
     id: '9',
@@ -122,6 +134,7 @@ export const mockJobs: JobListing[] = [
     jobType: 'Part-time',
     experienceLevel: 'Mid-level',
     postedDate: '2024-07-23',
+    salaryRange: 'Negotiable Hourly Rate',
   },
   {
     id: '10',
@@ -136,13 +149,45 @@ export const mockJobs: JobListing[] = [
     experienceLevel: 'Lead',
     postedDate: '2024-07-19',
     logoUrl: 'https://placehold.co/100x100.png',
+    salaryRange: '$3000-$4500',
+  },
+  {
+    id: '11',
+    title: 'Customer Service Representative',
+    company: 'Ethio Telecom',
+    location: 'Addis Ababa',
+    snippet: 'Join Ethio Telecom as a Customer Service Rep. Excellent communication skills required.',
+    fullDescription: 'Detailed description for Customer Service Rep at Ethio Telecom.',
+    jobUrl: 'https://example.com/job/11',
+    industry: 'Customer Service',
+    jobType: 'Full-time',
+    experienceLevel: 'Entry',
+    postedDate: '2024-07-29',
+    logoUrl: 'https://placehold.co/100x100.png',
+    isFeatured: true,
+    salaryRange: '$500-$800',
+  },
+  {
+    id: '12',
+    title: 'Delivery Driver',
+    company: 'Zmall Delivery',
+    location: 'Addis Ababa',
+    snippet: 'Reliable delivery driver needed for city routes. Valid license and good driving record essential.',
+    fullDescription: 'Detailed description for Delivery Driver at Zmall Delivery.',
+    jobUrl: 'https://example.com/job/12',
+    industry: 'Delivery',
+    jobType: 'Part-time',
+    experienceLevel: 'Entry',
+    postedDate: '2024-07-30',
+    logoUrl: 'https://placehold.co/100x100.png',
+    salaryRange: 'Per Delivery + Tips',
   },
 ];
 
 export const EthiopianMajorCities = [
   "Addis Ababa",
   "Adama",
-  "Awassa (Hawassa)",
+  "Hawassa", // Updated from Awassa (Hawassa)
   "Bahir Dar",
   "Dire Dawa",
   "Gondar",
@@ -150,4 +195,42 @@ export const EthiopianMajorCities = [
   "Jimma",
   "Dessie",
   "Jijiga"
+];
+
+export const mockCategories: Category[] = [
+  { id: 'cat1', name: 'Technology', jobCount: 3458, imageUrl: 'https://placehold.co/400x300.png', aiHint: 'laptop code' },
+  { id: 'cat2', name: 'Customer Service', jobCount: 2354, imageUrl: 'https://placehold.co/400x300.png', aiHint: 'headset support' },
+  { id: 'cat3', name: 'Delivery', jobCount: 1547, imageUrl: 'https://placehold.co/400x300.png', aiHint: 'delivery van' },
+  { id: 'cat4', name: 'Marketing', jobCount: 1785, imageUrl: 'https://placehold.co/400x300.png', aiHint: 'marketing chart' },
+  { id: 'cat5', name: 'HR', jobCount: 1754, imageUrl: 'https://placehold.co/400x300.png', aiHint: 'team meeting' },
+  { id: 'cat6', name: 'Healthcare', jobCount: 3457, imageUrl: 'https://placehold.co/400x300.png', aiHint: 'doctor nurse' },
+  { id: 'cat7', name: 'Accounting', jobCount: 6475, imageUrl: 'https://placehold.co/400x300.png', aiHint: 'calculator ledger' },
+  { id: 'cat8', name: 'Design', jobCount: 1200, imageUrl: 'https://placehold.co/400x300.png', aiHint: 'design tools' },
+];
+
+export const mockEmployers: Employer[] = [
+  { id: 'emp1', name: 'Tanner Fultzke', logoUrl: 'https://placehold.co/100x100.png', aiHint: 'professional portrait' },
+  { id: 'emp2', name: 'Shela Boyko', logoUrl: 'https://placehold.co/100x100.png', aiHint: 'professional portrait' },
+  { id: 'emp3', name: 'Tod Uli', logoUrl: 'https://placehold.co/100x100.png', aiHint: 'professional portrait' },
+  { id: 'emp4', name: 'Catherina Shoof', logoUrl: 'https://placehold.co/100x100.png', aiHint: 'professional portrait' },
+  { id: 'emp5', name: 'Rejoin', logoUrl: 'https://placehold.co/150x50.png', aiHint: 'company logo' }, // Example of different size
+];
+
+export const mockTestimonials: Testimonial[] = [
+  {
+    id: 'test1',
+    quote: 'EthioJobsConnect helped me find my dream job in just a week! The platform is user-friendly and has a vast number of opportunities.',
+    authorName: 'Abebe Kebede',
+    authorTitle: 'Software Engineer at Tech Solutions PLC',
+    avatarUrl: 'https://placehold.co/80x80.png',
+    aiHint: 'happy person'
+  },
+  {
+    id: 'test2',
+    quote: 'As a recruiter, EthioJobsConnect has been invaluable. We found highly qualified candidates quickly and efficiently.',
+    authorName: 'Fatuma Ahmed',
+    authorTitle: 'HR Manager at Connect Ethiopia',
+    avatarUrl: 'https://placehold.co/80x80.png',
+    aiHint: 'professional recruiter'
+  },
 ];

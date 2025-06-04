@@ -9,10 +9,19 @@ export default {
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
+    container: { // Added container configuration
+      center: true,
+      padding: {
+        DEFAULT: '1rem',
+        sm: '2rem',
+        lg: '4rem',
+        xl: '5rem',
+      },
+    },
     extend: {
       fontFamily: {
         body: ['PT Sans', 'sans-serif'],
-        headline: ['PT Sans', 'sans-serif'],
+        headline: ['PT Sans', 'sans-serif'], // Consider a more distinct headline font if desired
         code: ['Source Code Pro', 'monospace'],
       },
       colors: {
@@ -27,11 +36,11 @@ export default {
           foreground: 'hsl(var(--popover-foreground))',
         },
         primary: {
-          DEFAULT: 'hsl(var(--primary))',
+          DEFAULT: 'hsl(var(--primary))', // Dark Slate Blue
           foreground: 'hsl(var(--primary-foreground))',
         },
         secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
+          DEFAULT: 'hsl(var(--secondary))', // Lighter gray
           foreground: 'hsl(var(--secondary-foreground))',
         },
         muted: {
@@ -39,7 +48,7 @@ export default {
           foreground: 'hsl(var(--muted-foreground))',
         },
         accent: {
-          DEFAULT: 'hsl(var(--accent))',
+          DEFAULT: 'hsl(var(--accent))', // Vivid Cyan
           foreground: 'hsl(var(--accent-foreground))',
         },
         destructive: {
@@ -68,9 +77,9 @@ export default {
         },
       },
       borderRadius: {
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
+        lg: 'var(--radius)', // 0.5rem
+        md: 'calc(var(--radius) - 2px)', // 0.375rem
+        sm: 'calc(var(--radius) - 4px)', // 0.25rem
       },
       keyframes: {
         'accordion-down': {

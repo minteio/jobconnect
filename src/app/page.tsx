@@ -4,60 +4,60 @@
 import { useState, useEffect, useMemo } from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import JobSearch from '@/components/jobs/JobSearch';
-import JobList from '@/components/jobs/JobList';
-import JobFilters from '@/components/jobs/JobFilters';
-import PaginationControls from '@/components/common/PaginationControls';
-import AdSlot from '@/components/common/AdSlot';
-import { mockJobs } from '@/constants/mockData';
-import type { JobListing, Filters, Industry, JobType, ExperienceLevel } from '@/types';
-import { 
-  Sidebar, 
-  SidebarContent, 
-  SidebarHeader, 
-  SidebarFooter,
-  SidebarInset,
-  SidebarGroup,
-  SidebarGroupLabel
-} from '@/components/ui/sidebar';
-import { Button } from '@/components/ui/button';
-import { Settings2 } from 'lucide-react';
+import HeroSection from '@/components/landing/HeroSection';
+import CategoriesSection from '@/components/landing/CategoriesSection';
+import CallToActionSection from '@/components/landing/CallToActionSection';
+import LatestJobsSection from '@/components/landing/LatestJobsSection';
+import StatsSection from '@/components/landing/StatsSection';
+import DownloadSection from '@/components/landing/DownloadSection';
+import NewJobsSection from '@/components/landing/NewJobsSection';
+import FeaturedEmployersSection from '@/components/landing/FeaturedEmployersSection';
+import TestimonialsSection from '@/components/landing/TestimonialsSection';
 
-const ITEMS_PER_PAGE = 6;
+import { mockJobs } from '@/constants/mockData';
+import type { JobListing, Filters, Industry } from '@/types';
 
 export default function HomePage() {
   const [allJobs] = useState<JobListing[]>(mockJobs);
   const [filteredJobs, setFilteredJobs] = useState<JobListing[]>(allJobs);
-  const [currentPage, setCurrentPage] = useState(1);
-
-  const [searchTerm, setSearchTerm] = useState('');
-  const [locationTerm, setLocationTerm] = useState('');
+  
   const [activeFilters, setActiveFilters] = useState<Filters>({
-    industry: '',
-    jobType: '',
-    experienceLevel: '',
-    companySearch: '',
+    industry: '', // Used by general filters if any, and can be set by category click
+    jobType: '', // Used by LatestJobsSection tabs
+    experienceLevel: '', // Not directly used in new landing page UI, but kept for potential future use
+    companySearch: '', // Not directly used, but kept
+    // Hero search specific filters
+    keywords: '',
+    location: '',
+    category: '', // This will map to industry for filtering
   });
 
   useEffect(() => {
     let jobs = allJobs;
 
-    if (searchTerm) {
+    if (activeFilters.keywords) {
       jobs = jobs.filter(job =>
-        job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        job.company.toLowerCase().includes(searchTerm.toLowerCase())
+        job.title.toLowerCase().includes(activeFilters.keywords.toLowerCase()) ||
+        job.company.toLowerCase().includes(activeFilters.keywords.toLowerCase()) ||
+        job.snippet.toLowerCase().includes(activeFilters.keywords.toLowerCase())
       );
     }
 
-    if (locationTerm) {
+    if (activeFilters.location) {
       jobs = jobs.filter(job =>
-        job.location.toLowerCase().includes(locationTerm.toLowerCase())
+        job.location.toLowerCase().includes(activeFilters.location.toLowerCase())
       );
     }
-
-    if (activeFilters.industry) {
-      jobs = jobs.filter(job => job.industry === activeFilters.industry);
+    
+    // Category from hero search maps to industry filter
+    if (activeFilters.category) {
+      jobs = jobs.filter(job => job.industry === activeFilters.category);
+    } else if (activeFilters.industry) { // Fallback to general industry filter if category isn't set
+       jobs = jobs.filter(job => job.industry === activeFilters.industry);
     }
+    
+    // These filters are not directly controlled by the new landing page UI, 
+    // but if set by other means (e.g. direct URL params in future), they would apply.
     if (activeFilters.jobType) {
       jobs = jobs.filter(job => job.jobType === activeFilters.jobType);
     }
@@ -69,92 +69,56 @@ export default function HomePage() {
     }
     
     setFilteredJobs(jobs);
-    setCurrentPage(1); // Reset to first page on new filter/search
-  }, [allJobs, searchTerm, locationTerm, activeFilters]);
+  }, [allJobs, activeFilters]);
 
-  const paginatedJobs = useMemo(() => {
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    const endIndex = startIndex + ITEMS_PER_PAGE;
-    return filteredJobs.slice(startIndex, endIndex);
-  }, [filteredJobs, currentPage]);
 
-  const totalPages = Math.ceil(filteredJobs.length / ITEMS_PER_PAGE);
-
-  const handleSearch = (keyword: string, location: string) => {
-    setSearchTerm(keyword);
-    setLocationTerm(location);
+  const handleHeroSearch = (keywords: string, location: string, category: Industry | "") => {
+    setActiveFilters(prev => ({ 
+      ...prev, 
+      keywords,
+      location,
+      category,
+      industry: category, // Sync category search with general industry filter
+    }));
   };
 
-  const handleFilterChange = <K extends keyof Filters>(key: K, value: Filters[K]) => {
-    setActiveFilters(prev => ({ ...prev, [key]: value }));
-  };
+  // Memoized values for props to sections that display jobs
+  const latestJobs = useMemo(() => {
+    // Latest jobs section might have its own internal tab filtering logic, 
+    // but it will receive the globally filtered jobs based on hero search.
+    // For simplicity, we pass allJobs here, and LatestJobsSection can do further slicing/tab filtering.
+    // Or, pass filteredJobs if hero search should affect "Latest Jobs" section display.
+    // Let's pass allJobs and let LatestJobs handle its own display logic.
+    return allJobs; 
+  }, [allJobs]);
 
-  const handleResetFilters = () => {
-    setActiveFilters({
-      industry: '',
-      jobType: '',
-      experienceLevel: '',
-      companySearch: '',
-    });
-  };
-  
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  const newJobs = useMemo(() => {
+     // Similar to latestJobs, could be allJobs or filteredJobs
+    return allJobs.filter(job => job.isFeatured);
+  }, [allJobs]);
+
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
-      <div className="flex flex-1">
-        <Sidebar 
-            variant="sidebar" 
-            collapsible="icon" 
-            className="border-r hidden md:flex"
-            style={{ '--sidebar-width': '280px' } as React.CSSProperties}
-        >
-          <SidebarHeader>
-            <div className="flex items-center gap-2 p-2">
-              <Settings2 className="h-5 w-5 text-primary" />
-              <h2 className="font-headline text-lg">Filters</h2>
-            </div>
-          </SidebarHeader>
-          <SidebarContent>
-            <JobFilters 
-              filters={activeFilters} 
-              onFilterChange={handleFilterChange}
-              onResetFilters={handleResetFilters}
-            />
-          </SidebarContent>
-          <SidebarFooter>
-            <AdSlot type="sidebar" className="m-2" />
-          </SidebarFooter>
-        </Sidebar>
-
-        <SidebarInset>
-          <main className="container mx-auto px-4 md:px-6 py-8 flex-1">
-            <JobSearch onSearch={handleSearch} initialKeyword={searchTerm} initialLocation={locationTerm} />
-            <AdSlot type="leaderboard" className="mx-auto mb-8" />
-            
-            {/* Mobile Filters Button - This is a basic example. Consider a Sheet component for a better mobile filter UX */}
-            {/* <div className="md:hidden mb-4">
-              <Button variant="outline" className="w-full">
-                <Settings2 className="mr-2 h-4 w-4" /> Show Filters
-              </Button>
-            </div> */}
-
-            <JobList jobs={paginatedJobs} />
-            {totalPages > 0 && (
-               <PaginationControls
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-              />
-            )}
-            <AdSlot type="in-content" className="mx-auto mt-8" />
-          </main>
-        </SidebarInset>
-      </div>
+      <main className="flex-1">
+        <HeroSection 
+          onSearch={handleHeroSearch} 
+          currentFilters={{
+            keywords: activeFilters.keywords, 
+            location: activeFilters.location,
+            category: activeFilters.category
+          }} 
+        />
+        <CategoriesSection />
+        <CallToActionSection />
+        <LatestJobsSection jobs={latestJobs} />
+        <StatsSection />
+        <DownloadSection />
+        <NewJobsSection jobs={newJobs} />
+        <FeaturedEmployersSection />
+        <TestimonialsSection />
+      </main>
       <Footer />
     </div>
   );
