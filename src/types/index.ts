@@ -5,6 +5,7 @@ export interface JobListing {
   company: string;
   location: string;
   snippet: string;
+  fullDescription: string; // Added full description
   jobUrl: string;
   industry: string;
   jobType: JobType;

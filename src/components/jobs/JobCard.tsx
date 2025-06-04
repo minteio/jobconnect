@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Briefcase, MapPin, Building, CalendarDays } from 'lucide-react';
+import { Briefcase, MapPin, Building, CalendarDays, ExternalLink } from 'lucide-react';
 import type { JobListing } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { formatDistanceToNow } from 'date-fns';
@@ -36,7 +36,11 @@ const JobCard: React.FC<JobCardProps> = ({ job }) => {
             </div>
           )}
           <div className="flex-1">
-            <CardTitle className="text-lg font-headline mb-1">{job.title}</CardTitle>
+            <CardTitle className="text-lg font-headline mb-1">
+              <Link href={`/jobs/${job.id}`} className="hover:underline hover:text-primary transition-colors">
+                {job.title}
+              </Link>
+            </CardTitle>
             <div className="flex items-center text-sm text-muted-foreground mb-1">
               <Building className="mr-1.5 h-4 w-4" />
               <span>{job.company}</span>
@@ -64,7 +68,7 @@ const JobCard: React.FC<JobCardProps> = ({ job }) => {
         <Button asChild variant="default" size="sm" className="bg-accent hover:bg-accent/90 text-accent-foreground w-full sm:w-auto">
           <Link href={job.jobUrl} target="_blank" rel="noopener noreferrer">
             Apply Now
-            <Briefcase className="ml-2 h-4 w-4" />
+            <ExternalLink className="ml-2 h-4 w-4" />
           </Link>
         </Button>
       </CardFooter>
