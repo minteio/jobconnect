@@ -17,6 +17,9 @@ interface JobFiltersProps {
   onResetFilters: () => void;
 }
 
+const ALL_INDUSTRIES_SELECT_VALUE = "__ALL_INDUSTRIES__";
+const ALL_EXPERIENCE_LEVELS_SELECT_VALUE = "__ALL_EXPERIENCE_LEVELS__";
+
 const JobFilters: React.FC<JobFiltersProps> = ({ filters, onFilterChange, onResetFilters }) => {
   return (
     <ScrollArea className="h-full p-4">
@@ -24,14 +27,20 @@ const JobFilters: React.FC<JobFiltersProps> = ({ filters, onFilterChange, onRese
         <div>
           <Label htmlFor="industry-filter" className="text-sm font-medium">Industry</Label>
           <Select
-            value={filters.industry}
-            onValueChange={(value: Industry | "") => onFilterChange('industry', value)}
+            value={filters.industry === "" ? ALL_INDUSTRIES_SELECT_VALUE : filters.industry}
+            onValueChange={(value: string) => {
+              if (value === ALL_INDUSTRIES_SELECT_VALUE) {
+                onFilterChange('industry', "");
+              } else {
+                onFilterChange('industry', value as Industry);
+              }
+            }}
           >
             <SelectTrigger id="industry-filter" className="mt-1">
               <SelectValue placeholder="All Industries" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Industries</SelectItem>
+              <SelectItem value={ALL_INDUSTRIES_SELECT_VALUE}>All Industries</SelectItem>
               {industries.map((industry) => (
                 <SelectItem key={industry} value={industry}>
                   {industry}
@@ -68,14 +77,20 @@ const JobFilters: React.FC<JobFiltersProps> = ({ filters, onFilterChange, onRese
         <div>
           <Label htmlFor="experience-filter" className="text-sm font-medium">Experience Level</Label>
           <Select
-            value={filters.experienceLevel}
-            onValueChange={(value: ExperienceLevel | "") => onFilterChange('experienceLevel', value)}
+            value={filters.experienceLevel === "" ? ALL_EXPERIENCE_LEVELS_SELECT_VALUE : filters.experienceLevel}
+            onValueChange={(value: string) => {
+              if (value === ALL_EXPERIENCE_LEVELS_SELECT_VALUE) {
+                onFilterChange('experienceLevel', "");
+              } else {
+                onFilterChange('experienceLevel', value as ExperienceLevel);
+              }
+            }}
           >
             <SelectTrigger id="experience-filter" className="mt-1">
               <SelectValue placeholder="All Levels" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Levels</SelectItem>
+              <SelectItem value={ALL_EXPERIENCE_LEVELS_SELECT_VALUE}>All Levels</SelectItem>
               {experienceLevels.map((level) => (
                 <SelectItem key={level} value={level}>
                   {level}
