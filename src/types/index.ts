@@ -1,4 +1,27 @@
 
+export interface RecruiterProfile {
+  name: string;
+  title: string;
+  memberSince: string;
+  avatarUrl: string;
+  email?: string;
+  phone?: string;
+  website?: string;
+  aiHint?: string;
+}
+
+export interface JobReview {
+  id: string;
+  author: {
+    name: string;
+    avatarUrl: string;
+    aiHint?: string;
+  };
+  rating: number; // 1-5
+  date: string;
+  comment: string;
+}
+
 export interface JobListing {
   id: string;
   title: string;
@@ -7,17 +30,31 @@ export interface JobListing {
   snippet: string;
   fullDescription: string;
   jobUrl: string;
-  industry: Industry; // Use Industry type
+  industry: Industry;
   jobType: JobType;
-  experienceLevel: ExperienceLevel;
-  postedDate: string; 
+  experienceLevel: ExperienceLevel; // e.g., 2yrs
+  minExperience?: string; // for "Min Exp" field
+  maxExperience?: string; // for "Max Exp" field
+  postedDate: string;
   logoUrl?: string;
-  isFeatured?: boolean; // For featured jobs/new jobs section
-  salaryRange?: string; // For job card display
+  isFeatured?: boolean;
+  salaryRange?: string; // e.g. "$12,000 - $15,000"
+  minSalary?: string; // e.g. $12,000
+  maxSalary?: string; // e.g. $15,000
+  languages?: string[]; // e.g. ["English", "Hindi"]
+  locality?: string; // e.g. "USA, UK, India"
+  eligibility?: string; // e.g. "Any Graduate"
+  companyInfo?: string; // Short info about the company if different from main description
+  views?: number;
+  isUrgent?: boolean;
+  postedByRecruiter?: RecruiterProfile;
+  skills?: string[];
+  reviews?: JobReview[];
+  ratingStats?: { rating: number; count: number; percentage: number }[]; // For rating bars
 }
 
 export type JobType = "Full-time" | "Part-time" | "Contract" | "Internship" | "Freelance";
-export type ExperienceLevel = "Entry" | "Mid-level" | "Senior" | "Lead" | "Manager";
+export type ExperienceLevel = "Entry" | "Mid-level" | "Senior" | "Lead" | "Manager" | string; // Allow string for "2yrs"
 
 export const industries = ["Technology", "Marketing", "Finance", "Healthcare", "Engineering", "Education", "Sales", "Design", "Customer Service", "Delivery", "HR", "Accounting", "Other"] as const;
 export type Industry = typeof industries[number];
@@ -30,8 +67,7 @@ export interface Filters {
   jobType: JobType | "";
   experienceLevel: ExperienceLevel | "";
   companySearch: string;
-  // For hero search
-  category: Industry | ""; 
+  category: Industry | "";
   location: string;
   keywords: string;
 }
@@ -58,4 +94,11 @@ export interface Testimonial {
   authorTitle: string;
   avatarUrl: string;
   aiHint: string;
+}
+
+export interface SimilarJobSidebarItem {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
 }

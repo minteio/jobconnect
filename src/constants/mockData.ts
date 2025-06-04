@@ -1,22 +1,78 @@
 
-import type { JobListing, Industry, JobType, ExperienceLevel, Category, Employer, Testimonial } from '@/types';
+import type { JobListing, Industry, JobType, ExperienceLevel, Category, Employer, Testimonial, RecruiterProfile, JobReview, SimilarJobSidebarItem } from '@/types';
+
+export const mockRecruiters: RecruiterProfile[] = [
+  {
+    name: 'Robert McLean',
+    title: 'HR Recruiter at Network Pvt ltd',
+    memberSince: 'November 2018',
+    avatarUrl: 'https://placehold.co/80x80.png',
+    email: 'robert123@gmail.com',
+    phone: '0-255-657-24587',
+    website: 'http://spiruko.com/',
+    aiHint: 'professional recruiter'
+  },
+  {
+    name: 'Jane Doe',
+    title: 'Talent Acquisition Lead',
+    memberSince: 'June 2019',
+    avatarUrl: 'https://placehold.co/80x80.png',
+    aiHint: 'friendly professional'
+  }
+];
+
+export const mockReviews: JobReview[] = [
+  {
+    id: 'review1',
+    author: { name: 'Joanne Scott', avatarUrl: 'https://placehold.co/40x40.png', aiHint: 'female user' },
+    rating: 4,
+    date: 'Dec 21st, 08:12:30',
+    comment: 'On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue.'
+  },
+  {
+    id: 'review2',
+    author: { name: 'Edward', avatarUrl: 'https://placehold.co/40x40.png', aiHint: 'male user' },
+    rating: 5,
+    date: 'Dec 20th, 10:25:00',
+    comment: 'A very good opportunity for those looking to advance their career. The company culture is great and the team is supportive.'
+  }
+];
 
 export const mockJobs: JobListing[] = [
   {
     id: '1',
-    title: 'Senior Frontend Developer',
-    company: 'Tech Solutions PLC',
-    location: 'Addis Ababa',
-    snippet: 'Seeking an experienced Frontend Developer to build responsive and performant web applications using React and TypeScript.',
-    fullDescription: 'Tech Solutions PLC is a leading innovator in the Ethiopian tech scene. We are looking for a highly skilled Senior Frontend Developer to join our dynamic team. Responsibilities include developing user-facing features, ensuring the technical feasibility of UI/UX designs, and optimizing applications for maximum speed and scalability. You will collaborate with other team members and stakeholders. Requirements: 5+ years of experience with React, TypeScript, HTML, CSS, and modern JavaScript frameworks. Strong understanding of responsive design principles and RESTful APIs.',
+    title: 'Hard ware Technician',
+    company: 'Network Pvt ltd',
+    location: 'USA', // Simplified to match image
+    snippet: 'Seeking an experienced Hardware Technician to manage and maintain hardware systems.',
+    fullDescription: 'At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.\n\nOn the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain.',
     jobUrl: 'https://example.com/job/1',
     industry: 'Technology',
     jobType: 'Full-time',
-    experienceLevel: 'Senior',
-    postedDate: '2024-07-20',
-    logoUrl: 'https://placehold.co/100x100.png',
+    experienceLevel: 'Mid-level', // Generic, specific exp in max/min
+    minExperience: '1yr',
+    maxExperience: '2yrs',
+    postedDate: '2023-12-25', // To match "Posted By Company / 25th Dec 2018" (year updated)
+    logoUrl: 'https://placehold.co/100x100.png', // Placeholder for swirl logo
     isFeatured: true,
-    salaryRange: '$2000-$3000',
+    isUrgent: true,
+    minSalary: '$12,000',
+    maxSalary: '$15,000',
+    languages: ['English', 'Hindi'],
+    locality: 'USA, UK, India',
+    eligibility: 'Any Graduate',
+    companyInfo: 'Acme Corporation pvt ltd',
+    views: 765,
+    postedByRecruiter: mockRecruiters[0],
+    skills: ['Software', 'Hardware & Network', 'Job In USA'],
+    reviews: mockReviews,
+    ratingStats: [
+      { rating: 5, count: 6550, percentage: 70 },
+      { rating: 4, count: 7502, percentage: 80 },
+      { rating: 3, count: 5524, percentage: 60 },
+      { rating: 2, count: 465, percentage: 30 },
+      { rating: 1, count: 128, percentage: 10 },
+    ],
   },
   {
     id: '2',
@@ -32,162 +88,58 @@ export const mockJobs: JobListing[] = [
     postedDate: '2024-07-18',
     logoUrl: 'https://placehold.co/100x100.png',
     salaryRange: '$1500-$2500',
+    views: 320,
+    postedByRecruiter: mockRecruiters[1],
+    skills: ['SEO', 'Social Media', 'Campaign Management'],
+    reviews: [mockReviews[0]],
+     ratingStats: [
+      { rating: 5, count: 150, percentage: 60 },
+      { rating: 4, count: 80, percentage: 30 },
+      { rating: 3, count: 20, percentage: 10 },
+      { rating: 2, count: 5, percentage: 5 },
+      { rating: 1, count: 2, percentage: 2 },
+    ],
   },
   {
-    id: '3',
-    title: 'Accountant',
-    company: 'Finance Hub',
-    location: 'Hawassa',
-    snippet: 'Responsible for managing financial records, preparing reports, and ensuring compliance. CPA or equivalent preferred.',
-    fullDescription: 'Finance Hub in Hawassa is looking for a detail-oriented Accountant. The role involves managing all accounting transactions, preparing budget forecasts, publishing financial statements in time, and handling monthly, quarterly, and annual closings. You will also ensure timely bank payments and reconcile accounts payable and receivable. Requirements: BSc in Accounting, Finance or relevant degree. Additional certification (CPA or CMA) is a plus. Proven work experience as an Accountant.',
-    jobUrl: 'https://example.com/job/3',
+    id: 'related1',
+    title: 'Accountant Jobs',
+    company: 'Sally Peake',
+    location: 'Los Angeles',
+    snippet: 'Urgent hiring for accountant jobs.',
+    fullDescription: 'Detailed description for Accountant Jobs.',
+    jobUrl: 'https://example.com/job/related1',
     industry: 'Finance',
     jobType: 'Full-time',
     experienceLevel: 'Mid-level',
-    postedDate: '2024-07-22',
-    isFeatured: true,
-    salaryRange: '$1000-$1800',
+    postedDate: '2024-07-20',
+    logoUrl: 'https://placehold.co/400x300.png',
+    aiHint: 'woman working office',
+    isFeatured: true, // For the "Featured" banner in related posts
+    salaryRange: '$925', // Simplified for card display
   },
   {
-    id: '4',
-    title: 'Registered Nurse',
-    company: 'City General Hospital',
-    location: 'Dire Dawa',
-    snippet: 'Provide patient care in a fast-paced hospital environment. Must be a licensed RN with at least 2 years of experience.',
-    fullDescription: 'City General Hospital in Dire Dawa is hiring a compassionate and skilled Registered Nurse. You will be responsible for assessing patient conditions, administering medications, and providing emotional support to patients and their families. This role requires excellent communication skills and the ability to work in a high-pressure environment. Requirements: Valid RN license in Ethiopia. Minimum 2 years of nursing experience in a hospital setting. BLS/ACLS certification preferred.',
-    jobUrl: 'https://example.com/job/4',
-    industry: 'Healthcare',
-    jobType: 'Full-time',
-    experienceLevel: 'Mid-level',
-    postedDate: '2024-07-15',
-    logoUrl: 'https://placehold.co/100x100.png',
-    salaryRange: '$800-$1500',
-  },
-  {
-    id: '5',
-    title: 'Software Engineering Intern',
-    company: 'Innovate Tech',
-    location: 'Addis Ababa',
-    snippet: 'Exciting internship opportunity for aspiring software engineers to work on real-world projects. Basic programming knowledge needed.',
-    fullDescription: 'Innovate Tech offers a dynamic Software Engineering Internship program. Interns will gain hands-on experience by contributing to ongoing projects, working alongside experienced developers, and learning about the full software development lifecycle. This is a great opportunity to develop your skills in a supportive environment. Requirements: Currently pursuing or recently completed a degree in Computer Science or a related field. Basic understanding of programming concepts (e.g., Python, Java, JavaScript). Eagerness to learn and contribute.',
-    jobUrl: 'https://example.com/job/5',
+    id: 'related2',
+    title: 'Data Entry Jobs',
+    company: 'Sally Peake',
+    location: 'Los Angeles',
+    snippet: 'Part-time data entry positions available.',
+    fullDescription: 'Detailed description for Data Entry Jobs.',
+    jobUrl: 'https://example.com/job/related2',
     industry: 'Technology',
-    jobType: 'Internship',
-    experienceLevel: 'Entry',
-    postedDate: '2024-07-25',
-    isFeatured: true,
-    salaryRange: 'Competitive Stipend',
-  },
-  {
-    id: '6',
-    title: 'Civil Engineer',
-    company: 'BuildRight Construction',
-    location: 'Bahir Dar',
-    snippet: 'Seeking a qualified Civil Engineer for infrastructure projects. Must have a degree in Civil Engineering and relevant site experience.',
-    fullDescription: 'BuildRight Construction is a leading firm in Bahir Dar, specializing in large-scale infrastructure projects. We need an experienced Civil Engineer to manage project planning, execution, and oversight. Responsibilities include site investigations, technical designs, and ensuring projects meet safety and quality standards. Requirements: Bachelor’s degree in Civil Engineering. 5+ years of experience in construction project management. Proficiency in AutoCAD and project management software.',
-    jobUrl: 'https://example.com/job/6',
-    industry: 'Engineering',
-    jobType: 'Full-time',
-    experienceLevel: 'Senior',
-    postedDate: '2024-07-10',
-    salaryRange: '$2500-$3500',
-  },
-   {
-    id: '7',
-    title: 'UX Designer',
-    company: 'Creative Labs',
-    location: 'Addis Ababa',
-    snippet: 'We are looking for a talented UX Designer to create intuitive and engaging user experiences for our web and mobile products.',
-    fullDescription: 'Creative Labs is at the forefront of user-centered design in Ethiopia. As a UX Designer, you will conduct user research, create wireframes, prototypes, and user flows, and collaborate with product managers and engineers to deliver outstanding digital products. Requirements: 3+ years of UX design experience. A strong portfolio showcasing your design process and solutions. Proficiency in design tools like Figma, Sketch, or Adobe XD.',
-    jobUrl: 'https://example.com/job/7',
-    industry: 'Design',
-    jobType: 'Full-time',
-    experienceLevel: 'Mid-level',
-    postedDate: '2024-07-28',
-    logoUrl: 'https://placehold.co/100x100.png',
-    isFeatured: true,
-    salaryRange: '$1800-$2800',
-  },
-  {
-    id: '8',
-    title: 'Sales Manager',
-    company: 'EthioGoods Inc.',
-    location: 'Adama',
-    snippet: 'Dynamic Sales Manager needed to lead our sales team and expand market reach. Proven track record in sales leadership.',
-    fullDescription: 'EthioGoods Inc., based in Adama, is seeking a results-driven Sales Manager to lead our growing sales department. You will be responsible for developing sales strategies, managing the sales team, building client relationships, and achieving sales targets. Requirements: 5+ years of sales experience, with at least 2 years in a managerial role. Excellent leadership and communication skills. Proven ability to drive sales growth.',
-    jobUrl: 'https://example.com/job/8',
-    industry: 'Sales',
-    jobType: 'Full-time',
-    experienceLevel: 'Manager',
-    postedDate: '2024-07-26',
-    salaryRange: '$2200-$3200 + Commission',
-  },
-  {
-    id: '9',
-    title: 'Part-time English Tutor',
-    company: 'LearnWell Academy',
-    location: 'Addis Ababa',
-    snippet: 'Part-time opportunity for experienced English tutors to teach students of various levels. Flexible hours.',
-    fullDescription: 'LearnWell Academy is looking for dedicated Part-time English Tutors in Addis Ababa. Tutors will provide English language instruction to students of different age groups and proficiency levels. Responsibilities include lesson planning, delivering engaging lessons, and assessing student progress. Requirements: Excellent command of the English language. Previous teaching or tutoring experience. TEFL/TESOL certification is a plus. Flexible availability.',
-    jobUrl: 'https://example.com/job/9',
-    industry: 'Education',
-    jobType: 'Part-time',
-    experienceLevel: 'Mid-level',
-    postedDate: '2024-07-23',
-    salaryRange: 'Negotiable Hourly Rate',
-  },
-  {
-    id: '10',
-    title: 'Project Manager (Construction)',
-    company: 'Mega Builders PLC',
-    location: 'Mekelle',
-    snippet: 'Experienced Project Manager to oversee large-scale construction projects from inception to completion. PMP certification is a plus.',
-    fullDescription: 'Mega Builders PLC in Mekelle requires a seasoned Project Manager for its construction division. This role involves overseeing all aspects of construction projects, including planning, budgeting, scheduling, resource allocation, and risk management. You will ensure projects are completed on time, within budget, and to the highest quality standards. Requirements: Degree in Civil Engineering, Construction Management, or related field. 7+ years of experience in construction project management. PMP certification or equivalent is highly desirable.',
-    jobUrl: 'https://example.com/job/10',
-    industry: 'Engineering',
-    jobType: 'Contract',
-    experienceLevel: 'Lead',
-    postedDate: '2024-07-19',
-    logoUrl: 'https://placehold.co/100x100.png',
-    salaryRange: '$3000-$4500',
-  },
-  {
-    id: '11',
-    title: 'Customer Service Representative',
-    company: 'Ethio Telecom',
-    location: 'Addis Ababa',
-    snippet: 'Join Ethio Telecom as a Customer Service Rep. Excellent communication skills required.',
-    fullDescription: 'Detailed description for Customer Service Rep at Ethio Telecom.',
-    jobUrl: 'https://example.com/job/11',
-    industry: 'Customer Service',
-    jobType: 'Full-time',
-    experienceLevel: 'Entry',
-    postedDate: '2024-07-29',
-    logoUrl: 'https://placehold.co/100x100.png',
-    isFeatured: true,
-    salaryRange: '$500-$800',
-  },
-  {
-    id: '12',
-    title: 'Delivery Driver',
-    company: 'Zmall Delivery',
-    location: 'Addis Ababa',
-    snippet: 'Reliable delivery driver needed for city routes. Valid license and good driving record essential.',
-    fullDescription: 'Detailed description for Delivery Driver at Zmall Delivery.',
-    jobUrl: 'https://example.com/job/12',
-    industry: 'Delivery',
     jobType: 'Part-time',
     experienceLevel: 'Entry',
-    postedDate: '2024-07-30',
-    logoUrl: 'https://placehold.co/100x100.png',
-    salaryRange: 'Per Delivery + Tips',
+    postedDate: '2024-07-22',
+    logoUrl: 'https://placehold.co/400x300.png',
+    aiHint: 'people working computers',
+    salaryRange: '$378', // Simplified for card display
   },
+  // Add more mock jobs if needed
 ];
 
 export const EthiopianMajorCities = [
   "Addis Ababa",
   "Adama",
-  "Hawassa", // Updated from Awassa (Hawassa)
+  "Hawassa",
   "Bahir Dar",
   "Dire Dawa",
   "Gondar",
@@ -213,7 +165,7 @@ export const mockEmployers: Employer[] = [
   { id: 'emp2', name: 'Shela Boyko', logoUrl: 'https://placehold.co/100x100.png', aiHint: 'professional portrait' },
   { id: 'emp3', name: 'Tod Uli', logoUrl: 'https://placehold.co/100x100.png', aiHint: 'professional portrait' },
   { id: 'emp4', name: 'Catherina Shoof', logoUrl: 'https://placehold.co/100x100.png', aiHint: 'professional portrait' },
-  { id: 'emp5', name: 'Rejoin', logoUrl: 'https://placehold.co/150x50.png', aiHint: 'company logo' }, // Example of different size
+  { id: 'emp5', name: 'Rejoin', logoUrl: 'https://placehold.co/150x50.png', aiHint: 'company logo' },
 ];
 
 export const mockTestimonials: Testimonial[] = [
@@ -233,4 +185,14 @@ export const mockTestimonials: Testimonial[] = [
     avatarUrl: 'https://placehold.co/80x80.png',
     aiHint: 'professional recruiter'
   },
+];
+
+export const mockRelatedJobs: JobListing[] = mockJobs.filter(job => job.id.startsWith('related'));
+
+
+export const mockSimilarJobsSidebar: SimilarJobSidebarItem[] = [
+    {id: 'sj1', title: 'Web Designer', company: 'Designer Solutions', location: 'USA'},
+    {id: 'sj2', title: 'HR Recruiter', company: 'IT Hardware & Network Pvt ltd', location: 'USA'},
+    {id: 'sj3', title: 'Java Developer', company: 'Infrastructure Solutions', location: 'USA'},
+    {id: 'sj4', title: 'Hard ware Engineer', company: 'IT Hardware & Network Pvt ltd', location: 'USA'},
 ];
