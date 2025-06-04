@@ -20,17 +20,46 @@ import type { JobListing, Filters, Industry } from '@/types';
 export default function HomePage() {
   const [allJobs] = useState<JobListing[]>(mockJobs);
   const [filteredJobs, setFilteredJobs] = useState<JobListing[]>(allJobs);
+  const [heroTitle, setHeroTitle] = useState("Find Your Best Job");
   
   const [activeFilters, setActiveFilters] = useState<Filters>({
-    industry: '', // Used by general filters if any, and can be set by category click
-    jobType: '', // Used by LatestJobsSection tabs
-    experienceLevel: '', // Not directly used in new landing page UI, but kept for potential future use
-    companySearch: '', // Not directly used, but kept
-    // Hero search specific filters
+    industry: '', 
+    jobType: '', 
+    experienceLevel: '', 
+    companySearch: '', 
     keywords: '',
     location: '',
-    category: '', // This will map to industry for filtering
+    category: '', 
   });
+
+  const updateHeroTitle = () => {
+    const storedLanguage = typeof window !== 'undefined' ? localStorage.getItem('selectedLanguage') : 'en';
+    if (storedLanguage === 'am') {
+      setHeroTitle("ምርጥ ስራዎን ያግኙ");
+    } else {
+      setHeroTitle("Find Your Best Job");
+    }
+  };
+
+  useEffect(() => {
+    updateHeroTitle(); // Initial set
+
+    const handleStorageChange = () => {
+      updateHeroTitle();
+    };
+    
+    // Listen for custom event from Header
+    window.addEventListener('languageChanged', handleStorageChange);
+
+    // Also listen for direct localStorage changes (e.g., from other tabs, though less likely in this scenario)
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('languageChanged', handleStorageChange);
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
 
   useEffect(() => {
     let jobs = allJobs;
@@ -49,15 +78,12 @@ export default function HomePage() {
       );
     }
     
-    // Category from hero search maps to industry filter
     if (activeFilters.category) {
       jobs = jobs.filter(job => job.industry === activeFilters.category);
-    } else if (activeFilters.industry) { // Fallback to general industry filter if category isn't set
+    } else if (activeFilters.industry) { 
        jobs = jobs.filter(job => job.industry === activeFilters.industry);
     }
     
-    // These filters are not directly controlled by the new landing page UI, 
-    // but if set by other means (e.g. direct URL params in future), they would apply.
     if (activeFilters.jobType) {
       jobs = jobs.filter(job => job.jobType === activeFilters.jobType);
     }
@@ -78,22 +104,15 @@ export default function HomePage() {
       keywords,
       location,
       category,
-      industry: category, // Sync category search with general industry filter
+      industry: category, 
     }));
   };
 
-  // Memoized values for props to sections that display jobs
   const latestJobs = useMemo(() => {
-    // Latest jobs section might have its own internal tab filtering logic, 
-    // but it will receive the globally filtered jobs based on hero search.
-    // For simplicity, we pass allJobs here, and LatestJobsSection can do further slicing/tab filtering.
-    // Or, pass filteredJobs if hero search should affect "Latest Jobs" section display.
-    // Let's pass allJobs and let LatestJobs handle its own display logic.
     return allJobs; 
   }, [allJobs]);
 
   const newJobs = useMemo(() => {
-     // Similar to latestJobs, could be allJobs or filteredJobs
     return allJobs.filter(job => job.isFeatured);
   }, [allJobs]);
 
@@ -103,6 +122,7 @@ export default function HomePage() {
       <Header />
       <main className="flex-1">
         <HeroSection 
+          heroTitle={heroTitle}
           onSearch={handleHeroSearch} 
           currentFilters={{
             keywords: activeFilters.keywords, 

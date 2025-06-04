@@ -1,17 +1,27 @@
 
+"use client";
+
+import type { HTMLAttributes } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Briefcase, Facebook, Twitter, Linkedin, Instagram, Globe, User, LogIn, Menu, PlusCircle } from 'lucide-react'; // Removed DollarSign
+import { Briefcase, Facebook, Twitter, Linkedin, Instagram, Globe, User, LogIn, Menu, PlusCircle } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"; // For mobile menu
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
-const SocialLink = ({ href, icon: Icon, label }: { href: string, icon: React.ElementType, label: string }) => (
-  <Link href={href} aria-label={label} className="text-primary-foreground/80 hover:text-primary-foreground">
+interface SocialLinkProps extends HTMLAttributes<HTMLAnchorElement> {
+  href: string;
+  icon: React.ElementType;
+  label: string;
+}
+
+const SocialLink: React.FC<SocialLinkProps> = ({ href, icon: Icon, label, ...props }) => (
+  <Link href={href} aria-label={label} className="text-primary-foreground/80 hover:text-primary-foreground" {...props}>
     <Icon className="h-4 w-4" />
   </Link>
 );
@@ -37,6 +47,33 @@ const MainNavLink = ({ href, children, isActive = false }: { href: string, child
 
 
 const Header = () => {
+  const [currentLanguage, setCurrentLanguage] = useState('en');
+  const [siteName, setSiteName] = useState('EthioJobsConnect');
+  const [languageButtonText, setLanguageButtonText] = useState('English');
+
+  useEffect(() => {
+    const storedLanguage = localStorage.getItem('selectedLanguage');
+    if (storedLanguage) {
+      handleLanguageChange(storedLanguage, false);
+    }
+  }, []);
+
+  const handleLanguageChange = (lang: string, updateLocalStorage = true) => {
+    setCurrentLanguage(lang);
+    if (lang === 'am') {
+      setSiteName('ኢትዮጆብስኮኔክት');
+      setLanguageButtonText('አማርኛ');
+    } else {
+      setSiteName('EthioJobsConnect');
+      setLanguageButtonText('English');
+    }
+    if (updateLocalStorage) {
+      localStorage.setItem('selectedLanguage', lang);
+      // Optionally, dispatch a custom event to notify other components immediately
+      window.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang } }));
+    }
+  };
+  
   const MobileNav = () => (
     <Sheet>
       <SheetTrigger asChild>
@@ -49,7 +86,7 @@ const Header = () => {
         <nav className="flex flex-col gap-2 p-6">
           <Link href="/" className="flex items-center gap-2 mb-4">
             <Briefcase className="h-8 w-8" />
-            <h1 className="text-2xl font-bold font-headline">EthioJobsConnect</h1>
+            <h1 className="text-2xl font-bold font-headline">{siteName}</h1>
           </Link>
           <MainNavLink href="/" isActive>Home</MainNavLink>
           <MainNavLink href="/about-us">About Us</MainNavLink>
@@ -87,15 +124,14 @@ const Header = () => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="text-xs text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/5 px-2 py-1 h-auto">
-                  <Globe className="mr-1 h-3 w-3" /> English
+                  <Globe className="mr-1 h-3 w-3" /> {languageButtonText}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem>English</DropdownMenuItem>
-                <DropdownMenuItem>Amharic</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleLanguageChange('en')}>English</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleLanguageChange('am')}>አማርኛ</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            {/* Currency Dropdown Removed */}
             <TopBarLink href="/register"><User className="mr-1 h-3 w-3 inline-block"/>Register</TopBarLink>
             <TopBarLink href="/login"><LogIn className="mr-1 h-3 w-3 inline-block"/>Login</TopBarLink>
           </div>
@@ -106,7 +142,7 @@ const Header = () => {
       <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center gap-2">
           <Briefcase className="h-8 w-8" />
-          <h1 className="text-2xl font-bold font-headline">EthioJobsConnect</h1>
+          <h1 className="text-2xl font-bold font-headline">{siteName}</h1>
         </Link>
 
         <nav className="hidden md:flex items-center gap-1">
