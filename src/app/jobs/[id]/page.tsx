@@ -1,5 +1,5 @@
 
-import { mockJobs, mockRelatedJobs, mockCategories, mockSimilarJobsSidebar } from '@/constants/mockData';
+import { mockJobs, mockCategories } from '@/constants/mockData'; // Removed mockRelatedJobs and mockSimilarJobsSidebar as we'll derive or use full mockJobs
 import type { JobListing, JobReview, SimilarJobSidebarItem } from '@/types';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
@@ -85,8 +85,8 @@ const RelatedJobCard: React.FC<{ job: JobListing }> = ({ job }) => {
             <Image 
               src={job.logoUrl || "https://placehold.co/400x300.png"} 
               alt={job.title} 
-              layout="fill" 
-              objectFit="cover"
+              fill // Use fill for responsive images
+              style={{objectFit: 'cover'}} // Added style for objectFit with fill
               className="group-hover:scale-105 transition-transform duration-300"
               data-ai-hint={job.aiHint || "job image"}
             />
@@ -118,6 +118,9 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
   const timeSincePosted = postedDate ? formatDistanceToNow(postedDate, { addSuffix: true }) : 'N/A';
   const formattedPostedDate = postedDate ? format(postedDate, 'dd MMM yyyy') : 'N/A';
 
+  const mockRelatedJobs = mockJobs.filter(j => j.id !== job.id && j.industry === job.industry).slice(0, 2); // Example: jobs in same industry
+  const mockSimilarJobsForSidebar = mockJobs.filter(j => j.id !== job.id && (j.industry === job.industry || j.jobType === job.jobType)).slice(0, 4).map(j => ({ id: j.id, title: j.title, company: j.company, location: j.location }));
+
 
   return (
     <div className="flex flex-col min-h-screen bg-secondary/30">
@@ -129,7 +132,7 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
             <ol className="flex items-center space-x-2 text-sm text-muted-foreground">
               <li><Link href="/" className="hover:text-primary">Home</Link></li>
               <li><span>/</span></li>
-              <li><Link href="/jobs" className="hover:text-primary">Jobs</Link></li>
+              <li><Link href="/jobs" className="hover:text-primary">Jobs</Link></li> {/* Assuming a /jobs listing page exists */}
               <li><span>/</span></li>
               <li className="text-foreground" aria-current="page">{job.title}</li>
             </ol>
@@ -215,20 +218,23 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
                 </Button>
                 <Button variant="outline"><Share2 className="mr-2 h-4 w-4" /> Share Job</Button>
                 <Button variant="outline"><Printer className="mr-2 h-4 w-4" /> Print</Button>
-                <Button variant="destructive_outline" className="border-red-500 text-red-500 hover:bg-red-500/10"><AlertTriangle className="mr-2 h-4 w-4" /> Report Abuse</Button>
+                <Button variant="outline" className="border-red-500 text-red-500 hover:bg-red-500/10"><AlertTriangle className="mr-2 h-4 w-4" /> Report Abuse</Button>
             </div>
             
             {/* Related Posts */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className="text-xl font-headline">Related Posts</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {mockRelatedJobs.slice(0,2).map(relatedJob => <RelatedJobCard key={relatedJob.id} job={relatedJob} />)}
-                    </div>
-                </CardContent>
-            </Card>
+            {mockRelatedJobs.length > 0 && (
+              <Card>
+                  <CardHeader>
+                      <CardTitle className="text-xl font-headline">Related Posts</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          {mockRelatedJobs.map(relatedJob => <RelatedJobCard key={relatedJob.id} job={relatedJob} />)}
+                      </div>
+                  </CardContent>
+              </Card>
+            )}
+
 
             {/* Rating and Reviews */}
             {job.reviews && job.reviews.length > 0 && (
@@ -305,7 +311,7 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
                     <CardContent className="p-4 space-y-2">
                         {job.postedByRecruiter.email && <p className="text-sm flex items-center"><Mail className="mr-2 h-4 w-4 text-primary"/> {job.postedByRecruiter.email}</p>}
                         {job.postedByRecruiter.phone && <p className="text-sm flex items-center"><Phone className="mr-2 h-4 w-4 text-primary"/> {job.postedByRecruiter.phone}</p>}
-                        {job.postedByRecruiter.website && <p className="text-sm flex items-center"><WebIcon className="mr-2 h-4 w-4 text-primary"/> <Link href={job.postedByRecruiter.website} target="_blank" className="text-primary hover:underline truncate block">{job.postedByRecruiter.website}</Link></p>}
+                        {job.postedByRecruiter.website && <p className="text-sm flex items-center"><WebIcon className="mr-2 h-4 w-4 text-primary"/> <Link href={job.postedByRecruiter.website} target="_blank"  rel="noopener noreferrer" className="text-primary hover:underline truncate block">{job.postedByRecruiter.website}</Link></p>}
                        <div className="flex gap-2 pt-2">
                            <Button variant="default" size="sm" className="flex-1 bg-accent hover:bg-accent/90 text-accent-foreground"><MessageCircle className="mr-1.5 h-4 w-4"/> Chat</Button>
                            <Button variant="outline" size="sm" className="flex-1">Contact Me</Button>
@@ -364,16 +370,26 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
                     <CardTitle className="text-md font-semibold">Similar Jobs</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 space-y-3">
-                    {mockSimilarJobsSidebar.map(sj => (
+                    {mockSimilarJobsForSidebar.map(sj => {
+                      const similarJobDetails = mockJobs.find(j => j.id === sj.id);
+                      const applyUrl = similarJobDetails ? similarJobDetails.jobUrl : '#';
+                      const viewDetailsUrl = `/jobs/${sj.id}`;
+
+                      return (
                         <div key={sj.id} className="pb-3 border-b last:border-b-0 last:pb-0">
-                           <Link href={`/jobs/${sj.id}`} className="font-medium text-sm hover:text-primary block leading-tight">{sj.title}</Link>
+                           <Link href={viewDetailsUrl} className="font-medium text-sm hover:text-primary block leading-tight">{sj.title}</Link>
                            <p className="text-xs text-muted-foreground">{sj.company} - {sj.location}</p>
                            <div className="mt-1.5 flex gap-1">
-                               <Button variant="default" size="sm" className="h-6 px-2 py-0.5 text-xs bg-primary hover:bg-primary/90 text-primary-foreground">Apply</Button>
-                               <Button variant="outline" size="sm" className="h-6 px-2 py-0.5 text-xs">View Details</Button>
+                               <Button asChild variant="default" size="sm" className="h-6 px-2 py-0.5 text-xs bg-primary hover:bg-primary/90 text-primary-foreground">
+                                 <Link href={applyUrl} target="_blank" rel="noopener noreferrer">Apply</Link>
+                               </Button>
+                               <Button asChild variant="outline" size="sm" className="h-6 px-2 py-0.5 text-xs">
+                                 <Link href={viewDetailsUrl}>View Details</Link>
+                               </Button>
                            </div>
                         </div>
-                    ))}
+                      );
+                    })}
                 </CardContent>
             </Card>
           </div>
@@ -383,3 +399,4 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
     </div>
   );
 }
+

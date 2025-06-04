@@ -46,7 +46,7 @@ export const mockJobs: JobListing[] = [
     location: 'USA', // Simplified to match image
     snippet: 'Seeking an experienced Hardware Technician to manage and maintain hardware systems.',
     fullDescription: 'At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.\n\nOn the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain.',
-    jobUrl: 'https://example.com/job/1',
+    jobUrl: 'https://example.com/job/1/apply',
     industry: 'Technology',
     jobType: 'Full-time',
     experienceLevel: 'Mid-level', // Generic, specific exp in max/min
@@ -81,7 +81,7 @@ export const mockJobs: JobListing[] = [
     location: 'Addis Ababa',
     snippet: 'Join our marketing team to manage digital campaigns, SEO/SEM, and social media presence. Proven experience required.',
     fullDescription: 'Connect Ethiopia is expanding its marketing efforts and seeks a Digital Marketing Specialist. You will be responsible for planning and executing all digital marketing, including SEO/SEM, marketing database, email, social media, and display advertising campaigns. Measuring and reporting on the performance of all digital marketing campaigns is key. Requirements: 3+ years of digital marketing experience. Demonstrable experience leading and managing SEO/SEM, marketing database, email, social media and/or display advertising campaigns.',
-    jobUrl: 'https://example.com/job/2',
+    jobUrl: 'https://example.com/job/2/apply',
     industry: 'Marketing',
     jobType: 'Full-time',
     experienceLevel: 'Mid-level',
@@ -107,7 +107,7 @@ export const mockJobs: JobListing[] = [
     location: 'Los Angeles',
     snippet: 'Urgent hiring for accountant jobs.',
     fullDescription: 'Detailed description for Accountant Jobs.',
-    jobUrl: 'https://example.com/job/related1',
+    jobUrl: 'https://example.com/job/related1/apply',
     industry: 'Finance',
     jobType: 'Full-time',
     experienceLevel: 'Mid-level',
@@ -124,7 +124,7 @@ export const mockJobs: JobListing[] = [
     location: 'Los Angeles',
     snippet: 'Part-time data entry positions available.',
     fullDescription: 'Detailed description for Data Entry Jobs.',
-    jobUrl: 'https://example.com/job/related2',
+    jobUrl: 'https://example.com/job/related2/apply',
     industry: 'Technology',
     jobType: 'Part-time',
     experienceLevel: 'Entry',
@@ -187,12 +187,13 @@ export const mockTestimonials: Testimonial[] = [
   },
 ];
 
-export const mockRelatedJobs: JobListing[] = mockJobs.filter(job => job.id.startsWith('related'));
+export const mockRelatedJobs: JobListing[] = mockJobs.filter(job => ['related1', 'related2'].includes(job.id));
 
 
 export const mockSimilarJobsSidebar: SimilarJobSidebarItem[] = [
-    {id: 'sj1', title: 'Web Designer', company: 'Designer Solutions', location: 'USA'},
-    {id: 'sj2', title: 'HR Recruiter', company: 'IT Hardware & Network Pvt ltd', location: 'USA'},
-    {id: 'sj3', title: 'Java Developer', company: 'Infrastructure Solutions', location: 'USA'},
-    {id: 'sj4', title: 'Hard ware Engineer', company: 'IT Hardware & Network Pvt ltd', location: 'USA'},
+    {id: 'related1', title: 'Accountant Jobs', company: 'Sally Peake', location: 'Los Angeles'},
+    {id: 'related2', title: 'Data Entry Jobs', company: 'Sally Peake', location: 'Los Angeles'},
+    // Example: if you had a job with ID '1' you wanted to show as similar
+    // {id: '1', title: 'Hard ware Technician', company: 'Network Pvt ltd', location: 'USA'},
 ];
+
