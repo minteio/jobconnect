@@ -1,7 +1,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Briefcase, Facebook, Twitter, Linkedin, Instagram, Globe, DollarSign, User, LogIn, Menu } from 'lucide-react'; // Added Menu for mobile
+import { Briefcase, Facebook, Twitter, Linkedin, Instagram, Globe, DollarSign, User, LogIn, Menu, FileText, Users, BuildingIcon, Phone, PlusCircle } from 'lucide-react'; // Added Menu for mobile and other icons
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,11 +23,11 @@ const TopBarLink = ({ href, children }: { href: string, children: React.ReactNod
 );
 
 const MainNavLink = ({ href, children, isActive = false }: { href: string, children: React.ReactNode, isActive?: boolean }) => (
-  <Link 
-    href={href} 
+  <Link
+    href={href}
     className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-      isActive 
-        ? 'bg-primary-foreground/10 text-primary-foreground' 
+      isActive
+        ? 'bg-primary-foreground/10 text-primary-foreground'
         : 'text-primary-foreground/80 hover:bg-primary-foreground/5 hover:text-primary-foreground'
     }`}
   >
@@ -46,20 +46,27 @@ const Header = () => {
           <span className="sr-only">Toggle navigation menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="bg-primary text-primary-foreground p-0">
-        <nav className="flex flex-col gap-4 p-6">
+      <SheetContent side="left" className="bg-primary text-primary-foreground p-0 w-[280px] sm:w-[320px]">
+        <nav className="flex flex-col gap-2 p-6">
           <Link href="/" className="flex items-center gap-2 mb-4">
             <Briefcase className="h-8 w-8" />
             <h1 className="text-2xl font-bold font-headline">EthioJobsConnect</h1>
           </Link>
           <MainNavLink href="/" isActive>Home</MainNavLink>
-          <MainNavLink href="#">About Us</MainNavLink>
-          <MainNavLink href="#">Job Seekers</MainNavLink>
-          <MainNavLink href="#">Employers</MainNavLink>
-          <MainNavLink href="#">Contact</MainNavLink>
-          <div className="mt-4 border-t border-primary-foreground/20 pt-4">
-            <Button variant="outline" className="w-full text-primary border-primary-foreground/50 hover:bg-primary-foreground/10 mb-2">Register</Button>
-            <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">Login</Button>
+          <MainNavLink href="/about-us">About Us</MainNavLink>
+          <MainNavLink href="/job-seekers">Job Seekers</MainNavLink>
+          <MainNavLink href="/employers">Employers</MainNavLink>
+          <MainNavLink href="/contact">Contact</MainNavLink>
+          <div className="mt-4 border-t border-primary-foreground/20 pt-4 space-y-2">
+            <Button asChild variant="outline" className="w-full text-primary border-primary-foreground/50 hover:bg-primary-foreground/10">
+              <Link href="#">Register</Link>
+            </Button>
+            <Button asChild className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
+              <Link href="#">Login</Link>
+            </Button>
+            <Button asChild className="w-full bg-accent hover:bg-accent/80 text-accent-foreground mt-2">
+                <Link href="/post-a-job"><PlusCircle className="mr-2 h-4 w-4" /> Post a Job</Link>
+            </Button>
           </div>
         </nav>
       </SheetContent>
@@ -75,8 +82,7 @@ const Header = () => {
             <SocialLink href="#" icon={Facebook} label="Facebook" />
             <SocialLink href="#" icon={Twitter} label="Twitter" />
             <SocialLink href="#" icon={Linkedin} label="LinkedIn" />
-            {/* Instagram might need a custom SVG or a different Lucide icon */}
-            <SocialLink href="#" icon={Instagram} label="Instagram" /> 
+            <SocialLink href="#" icon={Instagram} label="Instagram" />
           </div>
           <div className="flex items-center gap-4">
             <DropdownMenu>
@@ -113,14 +119,16 @@ const Header = () => {
           <Briefcase className="h-8 w-8" />
           <h1 className="text-2xl font-bold font-headline">EthioJobsConnect</h1>
         </Link>
-        
-        <nav className="hidden md:flex items-center gap-2">
-          <MainNavLink href="/" isActive>Home</MainNavLink>
-          <MainNavLink href="#">About Us</MainNavLink>
-          <MainNavLink href="#">Job Seekers</MainNavLink>
-          <MainNavLink href="#">Employers</MainNavLink>
-          <MainNavLink href="#">Contact</MainNavLink>
-          <Button className="ml-2 bg-accent hover:bg-accent/90 text-accent-foreground">Post a Job</Button>
+
+        <nav className="hidden md:flex items-center gap-1">
+          <MainNavLink href="/" >Home</MainNavLink> {/* isActive can be dynamic based on current route */}
+          <MainNavLink href="/about-us">About Us</MainNavLink>
+          <MainNavLink href="/job-seekers">Job Seekers</MainNavLink>
+          <MainNavLink href="/employers">Employers</MainNavLink>
+          <MainNavLink href="/contact">Contact</MainNavLink>
+          <Button asChild className="ml-2 bg-accent hover:bg-accent/90 text-accent-foreground">
+            <Link href="/post-a-job"><PlusCircle className="mr-2 h-4 w-4" /> Post a Job</Link>
+          </Button>
         </nav>
         <div className="md:hidden">
           <MobileNav />
