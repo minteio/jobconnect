@@ -90,7 +90,6 @@ const RelatedJobCard: React.FC<{ job: JobListing }> = ({ job }) => {
               className="group-hover:scale-105 transition-transform duration-300"
               data-ai-hint={job.aiHint || "job image"}
             />
-            {job.isFeatured && <Badge className="absolute top-2 left-2 bg-red-500 text-white">Featured</Badge>}
             {job.salaryRange && !job.salaryRange.includes("-") && <Badge className="absolute top-2 right-2 bg-blue-500 text-white">{job.salaryRange}</Badge>}
           </div>
           <CardContent className="p-4">
@@ -399,4 +398,3 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
     </div>
   );
 }
-
