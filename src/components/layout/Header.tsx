@@ -4,8 +4,9 @@
 import type { HTMLAttributes } from 'react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Briefcase, Facebook, Twitter, Linkedin, Instagram, Globe, User, LogIn, Menu, PlusCircle } from 'lucide-react';
+import { Briefcase, Facebook, Twitter, Linkedin, Instagram, Globe, User, LogIn, LogOut, Menu, PlusCircle } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,11 +27,21 @@ const SocialLink: React.FC<SocialLinkProps> = ({ href, icon: Icon, label, ...pro
   </Link>
 );
 
-const TopBarLink = ({ href, children }: { href: string, children: React.ReactNode }) => (
-  <Link href={href} className="text-xs text-primary-foreground/80 hover:text-primary-foreground">
-    {children}
-  </Link>
-);
+const TopBarLink = ({ href, children, onClick }: { href?: string, children: React.ReactNode, onClick?: () => void }) => {
+  if (onClick) {
+    return (
+      <button onClick={onClick} className="text-xs text-primary-foreground/80 hover:text-primary-foreground">
+        {children}
+      </button>
+    );
+  }
+  return (
+    <Link href={href!} className="text-xs text-primary-foreground/80 hover:text-primary-foreground">
+      {children}
+    </Link>
+  );
+};
+
 
 const MainNavLink = ({ href, children, isActive = false }: { href: string, children: React.ReactNode, isActive?: boolean }) => (
   <Link
@@ -50,13 +61,40 @@ const Header = () => {
   const [currentLanguage, setCurrentLanguage] = useState('en');
   const [siteName, setSiteName] = useState('EthioJobsConnect');
   const [languageButtonText, setLanguageButtonText] = useState('English');
+  const [isEmployerLoggedIn, setIsEmployerLoggedIn] = useState(false);
+  const router = useRouter();
+
+  const updateLoginStatus = () => {
+    if (typeof window !== 'undefined') {
+      const loggedIn = localStorage.getItem('isEmployerLoggedIn') === 'true';
+      setIsEmployerLoggedIn(loggedIn);
+    }
+  };
 
   useEffect(() => {
-    const storedLanguage = localStorage.getItem('selectedLanguage');
-    if (storedLanguage) {
-      handleLanguageChange(storedLanguage, false);
+    updateLoginStatus(); // Initial check
+    if (typeof window !== 'undefined') {
+      const storedLanguage = localStorage.getItem('selectedLanguage');
+      if (storedLanguage) {
+        handleLanguageChange(storedLanguage, false);
+      }
+      window.addEventListener('authChanged', updateLoginStatus);
+      window.addEventListener('languageChanged', handleLanguageEvent); // Renamed to avoid conflict
     }
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('authChanged', updateLoginStatus);
+        window.removeEventListener('languageChanged', handleLanguageEvent);
+      }
+    };
   }, []);
+
+  const handleLanguageEvent = (event: Event) => {
+    const customEvent = event as CustomEvent<{ lang: string }>;
+    if (customEvent.detail && customEvent.detail.lang) {
+      handleLanguageChange(customEvent.detail.lang, false);
+    }
+  };
 
   const handleLanguageChange = (lang: string, updateLocalStorage = true) => {
     setCurrentLanguage(lang);
@@ -67,11 +105,18 @@ const Header = () => {
       setSiteName('EthioJobsConnect');
       setLanguageButtonText('English');
     }
-    if (updateLocalStorage) {
+    if (updateLocalStorage && typeof window !== 'undefined') {
       localStorage.setItem('selectedLanguage', lang);
-      // Optionally, dispatch a custom event to notify other components immediately
       window.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang } }));
     }
+  };
+
+  const handleLogout = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('isEmployerLoggedIn');
+      window.dispatchEvent(new Event('authChanged'));
+    }
+    router.push('/');
   };
   
   const MobileNav = () => (
@@ -94,15 +139,25 @@ const Header = () => {
           <MainNavLink href="/employers">Employers</MainNavLink>
           <MainNavLink href="/contact">Contact</MainNavLink>
           <div className="mt-4 border-t border-primary-foreground/20 pt-4 space-y-2">
-            <Button asChild variant="outline" className="w-full text-primary border-primary-foreground/50 hover:bg-primary-foreground/10">
-              <Link href="/register">Register</Link>
-            </Button>
-            <Button asChild className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
-              <Link href="/login">Login</Link>
-            </Button>
-            <Button asChild className="w-full bg-accent hover:bg-accent/80 text-accent-foreground mt-2">
-                <Link href="/post-a-job"><PlusCircle className="mr-2 h-4 w-4" /> Post a Job</Link>
-            </Button>
+            {isEmployerLoggedIn ? (
+              <>
+                <Button asChild className="w-full bg-accent hover:bg-accent/80 text-accent-foreground">
+                    <Link href="/post-a-job"><PlusCircle className="mr-2 h-4 w-4" /> Post a Job</Link>
+                </Button>
+                <Button variant="outline" className="w-full text-primary border-primary-foreground/50 hover:bg-primary-foreground/10" onClick={handleLogout}>
+                  <LogOut className="mr-2 h-4 w-4" /> Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button asChild variant="outline" className="w-full text-primary border-primary-foreground/50 hover:bg-primary-foreground/10">
+                  <Link href="/register">Register</Link>
+                </Button>
+                <Button asChild className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
+                  <Link href="/login">Login</Link>
+                </Button>
+              </>
+            )}
           </div>
         </nav>
       </SheetContent>
@@ -132,8 +187,16 @@ const Header = () => {
                 <DropdownMenuItem onClick={() => handleLanguageChange('am')}>አማርኛ</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <TopBarLink href="/register"><User className="mr-1 h-3 w-3 inline-block"/>Register</TopBarLink>
-            <TopBarLink href="/login"><LogIn className="mr-1 h-3 w-3 inline-block"/>Login</TopBarLink>
+            {isEmployerLoggedIn ? (
+              <TopBarLink onClick={handleLogout}>
+                <LogOut className="mr-1 h-3 w-3 inline-block"/>Logout
+              </TopBarLink>
+            ) : (
+              <>
+                <TopBarLink href="/register"><User className="mr-1 h-3 w-3 inline-block"/>Register</TopBarLink>
+                <TopBarLink href="/login"><LogIn className="mr-1 h-3 w-3 inline-block"/>Login</TopBarLink>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -151,9 +214,11 @@ const Header = () => {
           <MainNavLink href="/job-seekers">Job Seekers</MainNavLink>
           <MainNavLink href="/employers">Employers</MainNavLink>
           <MainNavLink href="/contact">Contact</MainNavLink>
-          <Button asChild className="ml-2 bg-accent hover:bg-accent/90 text-accent-foreground">
-            <Link href="/post-a-job"><PlusCircle className="mr-2 h-4 w-4" /> Post a Job</Link>
-          </Button>
+          {isEmployerLoggedIn && (
+            <Button asChild className="ml-2 bg-accent hover:bg-accent/90 text-accent-foreground">
+              <Link href="/post-a-job"><PlusCircle className="mr-2 h-4 w-4" /> Post a Job</Link>
+            </Button>
+          )}
         </nav>
         <div className="md:hidden">
           <MobileNav />

@@ -1,4 +1,7 @@
 
+"use client";
+
+import { useRouter } from 'next/navigation';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,6 +12,16 @@ import { LogIn } from 'lucide-react';
 import Link from 'next/link';
 
 export default function LoginPage() {
+  const router = useRouter();
+
+  const handleLogin = (event: React.FormEvent) => {
+    event.preventDefault();
+    // Simulate successful login
+    localStorage.setItem('isEmployerLoggedIn', 'true');
+    window.dispatchEvent(new Event('authChanged')); // Notify header or other components
+    router.push('/'); // Redirect to homepage or dashboard
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-secondary/30">
       <Header />
@@ -25,14 +38,14 @@ export default function LoginPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="p-6 md:p-8">
-              <form className="space-y-6">
+              <form className="space-y-6" onSubmit={handleLogin}>
                 <div>
                   <Label htmlFor="email" className="text-sm font-medium">Email Address</Label>
-                  <Input id="email" type="email" placeholder="Enter your email" className="mt-1" />
+                  <Input id="email" type="email" placeholder="Enter your email" className="mt-1" defaultValue="employer@example.com" />
                 </div>
                 <div>
                   <Label htmlFor="password" className="text-sm font-medium">Password</Label>
-                  <Input id="password" type="password" placeholder="Enter your password" className="mt-1" />
+                  <Input id="password" type="password" placeholder="Enter your password" className="mt-1" defaultValue="password" />
                 </div>
                 <div className="flex items-center justify-between">
                   <Link href="#" className="text-sm text-primary hover:underline">

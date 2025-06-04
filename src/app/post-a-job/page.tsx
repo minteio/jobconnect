@@ -1,4 +1,8 @@
 
+"use client";
+
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,10 +11,44 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Briefcase, DollarSign, MapPin, BuildingIcon, FileText, PlusCircle, Users } from 'lucide-react';
+import { Briefcase, DollarSign, MapPin, BuildingIcon, FileText, PlusCircle, Users, Loader2 } from 'lucide-react';
 import { industries, jobTypes, experienceLevels } from '@/types';
 
 export default function PostAJobPage() {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthorized, setIsAuthorized] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const employerLoggedIn = localStorage.getItem('isEmployerLoggedIn') === 'true';
+      if (!employerLoggedIn) {
+        router.push('/login');
+      } else {
+        setIsAuthorized(true);
+      }
+      setIsLoading(false);
+    }
+  }, [router]);
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col min-h-screen items-center justify-center bg-secondary/30">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <p className="mt-4 text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
+
+  if (!isAuthorized) {
+     // This case should ideally be handled by the redirect, but as a fallback:
+    return (
+      <div className="flex flex-col min-h-screen items-center justify-center bg-secondary/30">
+        <p className="text-destructive">Access Denied. Redirecting to login...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-secondary/30">
       <Header />
