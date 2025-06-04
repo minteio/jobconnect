@@ -1,7 +1,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Briefcase, Facebook, Twitter, Linkedin, Instagram, Globe, DollarSign, User, LogIn, Menu, FileText, Users, BuildingIcon, Phone, PlusCircle } from 'lucide-react'; // Added Menu for mobile and other icons
+import { Briefcase, Facebook, Twitter, Linkedin, Instagram, Globe, User, LogIn, Menu, PlusCircle } from 'lucide-react'; // Removed DollarSign
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,7 +37,6 @@ const MainNavLink = ({ href, children, isActive = false }: { href: string, child
 
 
 const Header = () => {
-  // Simplified mobile navigation for now
   const MobileNav = () => (
     <Sheet>
       <SheetTrigger asChild>
@@ -59,10 +58,10 @@ const Header = () => {
           <MainNavLink href="/contact">Contact</MainNavLink>
           <div className="mt-4 border-t border-primary-foreground/20 pt-4 space-y-2">
             <Button asChild variant="outline" className="w-full text-primary border-primary-foreground/50 hover:bg-primary-foreground/10">
-              <Link href="#">Register</Link>
+              <Link href="/register">Register</Link>
             </Button>
             <Button asChild className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
-              <Link href="#">Login</Link>
+              <Link href="/login">Login</Link>
             </Button>
             <Button asChild className="w-full bg-accent hover:bg-accent/80 text-accent-foreground mt-2">
                 <Link href="/post-a-job"><PlusCircle className="mr-2 h-4 w-4" /> Post a Job</Link>
@@ -96,19 +95,9 @@ const Header = () => {
                 <DropdownMenuItem>Amharic</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                 <Button variant="ghost" size="sm" className="text-xs text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/5 px-2 py-1 h-auto">
-                  <DollarSign className="mr-1 h-3 w-3" /> USD
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem>USD</DropdownMenuItem>
-                <DropdownMenuItem>ETB</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <TopBarLink href="#"><User className="mr-1 h-3 w-3 inline-block"/>Register</TopBarLink>
-            <TopBarLink href="#"><LogIn className="mr-1 h-3 w-3 inline-block"/>Login</TopBarLink>
+            {/* Currency Dropdown Removed */}
+            <TopBarLink href="/register"><User className="mr-1 h-3 w-3 inline-block"/>Register</TopBarLink>
+            <TopBarLink href="/login"><LogIn className="mr-1 h-3 w-3 inline-block"/>Login</TopBarLink>
           </div>
         </div>
       </div>
@@ -121,7 +110,7 @@ const Header = () => {
         </Link>
 
         <nav className="hidden md:flex items-center gap-1">
-          <MainNavLink href="/" >Home</MainNavLink> {/* isActive can be dynamic based on current route */}
+          <MainNavLink href="/" >Home</MainNavLink>
           <MainNavLink href="/about-us">About Us</MainNavLink>
           <MainNavLink href="/job-seekers">Job Seekers</MainNavLink>
           <MainNavLink href="/employers">Employers</MainNavLink>
