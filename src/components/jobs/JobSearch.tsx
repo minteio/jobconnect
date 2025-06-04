@@ -2,7 +2,7 @@
 "use client";
 
 import type React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, MapPin } from 'lucide-react';
@@ -26,6 +26,14 @@ const ALL_ETHIOPIA_SELECT_VALUE = "__ALL_ETHIOPIA__";
 const JobSearch: React.FC<JobSearchProps> = ({ onSearch, initialKeyword = '', initialLocation = '' }) => {
   const [keyword, setKeyword] = useState(initialKeyword);
   const [location, setLocation] = useState(initialLocation);
+
+  useEffect(() => {
+    setKeyword(initialKeyword);
+  }, [initialKeyword]);
+
+  useEffect(() => {
+    setLocation(initialLocation);
+  }, [initialLocation]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,8 +78,8 @@ const JobSearch: React.FC<JobSearchProps> = ({ onSearch, initialKeyword = '', in
           </label>
            <div className="relative">
             <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <Select 
-              value={location === '' ? ALL_ETHIOPIA_SELECT_VALUE : location} 
+            <Select
+              value={location === '' ? ALL_ETHIOPIA_SELECT_VALUE : location}
               onValueChange={handleLocationChange}
             >
               <SelectTrigger id="location-search" className="pl-10">
