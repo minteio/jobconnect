@@ -16,11 +16,16 @@ import TestimonialsSection from '@/components/landing/TestimonialsSection';
 
 import { mockJobs } from '@/constants/mockData';
 import type { JobListing, Filters, Industry } from '@/types';
+import { translateText } from '@/ai/flows/translate-text-flow';
+
+const BASE_HERO_TITLE_EN = "Find Your Best Job";
+const TRANSLATING_TEXT_AM = "ተርጓሚ..."; // "Translating..." in Amharic
+const TRANSLATING_TEXT_EN = "Translating...";
 
 export default function HomePage() {
   const [allJobs] = useState<JobListing[]>(mockJobs);
   const [filteredJobs, setFilteredJobs] = useState<JobListing[]>(allJobs);
-  const [heroTitle, setHeroTitle] = useState("Find Your Best Job");
+  const [heroTitle, setHeroTitle] = useState(BASE_HERO_TITLE_EN);
   
   const [activeFilters, setActiveFilters] = useState<Filters>({
     industry: '', 
@@ -32,31 +37,36 @@ export default function HomePage() {
     category: '', 
   });
 
-  const updateHeroTitle = () => {
+  const updateHeroTitleWithTranslation = async () => {
     const storedLanguage = typeof window !== 'undefined' ? localStorage.getItem('selectedLanguage') : 'en';
     if (storedLanguage === 'am') {
-      setHeroTitle("ምርጥ ስራዎን ያግኙ");
+      setHeroTitle(TRANSLATING_TEXT_AM);
+      try {
+        const translationOutput = await translateText({ text: BASE_HERO_TITLE_EN, targetLanguage: 'am' });
+        setHeroTitle(translationOutput.translatedText);
+      } catch (error) {
+        console.error("Translation to Amharic failed:", error);
+        setHeroTitle("ምርጥ ስራዎን ያግኙ"); // Fallback Amharic title
+      }
     } else {
-      setHeroTitle("Find Your Best Job");
+      // Optionally, translate back to English if the base title could be different or for consistency
+      // For now, just set to the base English title
+      setHeroTitle(BASE_HERO_TITLE_EN);
     }
   };
 
   useEffect(() => {
-    updateHeroTitle(); // Initial set
+    updateHeroTitleWithTranslation(); // Initial set
 
     const handleStorageChange = () => {
-      updateHeroTitle();
+      updateHeroTitleWithTranslation();
     };
     
-    // Listen for custom event from Header
     window.addEventListener('languageChanged', handleStorageChange);
-
-    // Also listen for direct localStorage changes (e.g., from other tabs, though less likely in this scenario)
-    window.addEventListener('storage', handleStorageChange);
+    // No need for 'storage' event listener if 'languageChanged' custom event is reliably dispatched
 
     return () => {
       window.removeEventListener('languageChanged', handleStorageChange);
-      window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
 
