@@ -21,6 +21,8 @@ interface JobSearchProps {
   initialLocation?: string;
 }
 
+const ALL_ETHIOPIA_SELECT_VALUE = "__ALL_ETHIOPIA__";
+
 const JobSearch: React.FC<JobSearchProps> = ({ onSearch, initialKeyword = '', initialLocation = '' }) => {
   const [keyword, setKeyword] = useState(initialKeyword);
   const [location, setLocation] = useState(initialLocation);
@@ -28,6 +30,14 @@ const JobSearch: React.FC<JobSearchProps> = ({ onSearch, initialKeyword = '', in
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSearch(keyword, location);
+  };
+
+  const handleLocationChange = (value: string) => {
+    if (value === ALL_ETHIOPIA_SELECT_VALUE) {
+      setLocation('');
+    } else {
+      setLocation(value);
+    }
   };
 
   return (
@@ -60,12 +70,15 @@ const JobSearch: React.FC<JobSearchProps> = ({ onSearch, initialKeyword = '', in
           </label>
            <div className="relative">
             <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <Select value={location} onValueChange={setLocation}>
+            <Select 
+              value={location === '' ? ALL_ETHIOPIA_SELECT_VALUE : location} 
+              onValueChange={handleLocationChange}
+            >
               <SelectTrigger id="location-search" className="pl-10">
                 <SelectValue placeholder="Select city" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Ethiopia</SelectItem>
+                <SelectItem value={ALL_ETHIOPIA_SELECT_VALUE}>All Ethiopia</SelectItem>
                 {EthiopianMajorCities.map((city) => (
                   <SelectItem key={city} value={city}>
                     {city}
