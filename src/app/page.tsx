@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation'; // Added useSearchParams
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import HeroSection from '@/components/landing/HeroSection';
@@ -19,7 +20,7 @@ import type { JobListing, Filters, Industry } from '@/types';
 import { translateText } from '@/ai/flows/translate-text-flow';
 
 const BASE_HERO_TITLE_EN = "Find Your Best Job";
-const TRANSLATING_TEXT_AM = "ተርጓሚ..."; // "Translating..." in Amharic
+const TRANSLATING_TEXT_AM = "ተርጓሚ...";
 const TRANSLATING_TEXT_EN = "Translating...";
 
 export default function HomePage() {
@@ -27,15 +28,38 @@ export default function HomePage() {
   const [filteredJobs, setFilteredJobs] = useState<JobListing[]>(allJobs);
   const [heroTitle, setHeroTitle] = useState(BASE_HERO_TITLE_EN);
   
+  const searchParams = useSearchParams(); // Initialize useSearchParams
+  const initialCategoryFromUrl = searchParams.get('category') as Industry | "" | null;
+
   const [activeFilters, setActiveFilters] = useState<Filters>({
-    industry: '', 
+    industry: initialCategoryFromUrl || '', 
     jobType: '', 
     experienceLevel: '', 
     companySearch: '', 
     keywords: '',
     location: '',
-    category: '', 
+    category: initialCategoryFromUrl || '', 
   });
+
+  // Effect to update filters when URL category query parameter changes
+  useEffect(() => {
+    const categoryFromUrl = searchParams.get('category') as Industry | "" | null;
+    if (categoryFromUrl && categoryFromUrl !== activeFilters.category) {
+      setActiveFilters(prev => ({
+        ...prev,
+        category: categoryFromUrl,
+        industry: categoryFromUrl, // Keep industry in sync with category
+        // Optionally reset other filters here if desired when a category card is clicked
+        // keywords: '', 
+        // location: '',
+      }));
+    } else if (!categoryFromUrl && activeFilters.category !== '') {
+      // If category is removed from URL, and it was set, consider resetting it in filters
+      // For now, we only react to category presence. A more complex reset logic could be added if needed.
+      // This avoids clearing filters if user manually changes URL without category then uses form.
+    }
+  }, [searchParams, activeFilters.category]);
+
 
   const updateHeroTitleWithTranslation = async () => {
     const storedLanguage = typeof window !== 'undefined' ? localStorage.getItem('selectedLanguage') : 'en';
@@ -46,25 +70,22 @@ export default function HomePage() {
         setHeroTitle(translationOutput.translatedText);
       } catch (error) {
         console.error("Translation to Amharic failed:", error);
-        setHeroTitle("ምርጥ ስራዎን ያግኙ"); // Fallback Amharic title
+        setHeroTitle("ምርጥ ስራዎን ያግኙ"); 
       }
     } else {
-      // Optionally, translate back to English if the base title could be different or for consistency
-      // For now, just set to the base English title
       setHeroTitle(BASE_HERO_TITLE_EN);
     }
   };
 
   useEffect(() => {
-    updateHeroTitleWithTranslation(); // Initial set
+    updateHeroTitleWithTranslation(); 
 
     const handleStorageChange = () => {
       updateHeroTitleWithTranslation();
     };
     
     window.addEventListener('languageChanged', handleStorageChange);
-    // No need for 'storage' event listener if 'languageChanged' custom event is reliably dispatched
-
+    
     return () => {
       window.removeEventListener('languageChanged', handleStorageChange);
     };
@@ -88,9 +109,11 @@ export default function HomePage() {
       );
     }
     
+    // Prioritize category filter if set (e.g., from URL or hero search)
     if (activeFilters.category) {
       jobs = jobs.filter(job => job.industry === activeFilters.category);
     } else if (activeFilters.industry) { 
+       // Fallback to industry if category is not set but industry is (might be redundant)
        jobs = jobs.filter(job => job.industry === activeFilters.industry);
     }
     
@@ -113,17 +136,27 @@ export default function HomePage() {
       ...prev, 
       keywords,
       location,
-      category,
-      industry: category, 
+      category, // Category from hero search form
+      industry: category, // Keep industry in sync
     }));
   };
 
   const latestJobs = useMemo(() => {
-    return allJobs; 
-  }, [allJobs]);
+    // If filters are active, show filtered jobs in "Latest Jobs" too, otherwise all.
+    // Or always show a slice of allJobs for "Latest" and let filteredJobs be for the main results.
+    // For now, let's have LatestJobsSection always show a slice of `filteredJobs`.
+    return filteredJobs; 
+  }, [filteredJobs]);
 
   const newJobs = useMemo(() => {
-    return allJobs.filter(job => job.isFeatured);
+    // "New Jobs" could be a subset of `allJobs` marked as `isFeatured`
+    // and then potentially filtered by `activeFilters` if desired.
+    // For simplicity, let's filter `allJobs` by `isFeatured` and then apply active filters.
+    let potentialNewJobs = allJobs.filter(job => job.isFeatured);
+    // This part is tricky: do we filter newJobs based on activeFilters too?
+    // Or are "New Jobs" always the same set regardless of filters?
+    // Let's assume "New Jobs" are a fixed set of featured jobs for now.
+     return allJobs.filter(job => job.isFeatured);
   }, [allJobs]);
 
 
@@ -137,12 +170,13 @@ export default function HomePage() {
           currentFilters={{
             keywords: activeFilters.keywords, 
             location: activeFilters.location,
-            category: activeFilters.category
+            category: activeFilters.category // Pass current category to HeroSearchForm
           }} 
         />
         <CategoriesSection />
         <CallToActionSection />
-        <LatestJobsSection jobs={latestJobs} />
+        {/* Pass filteredJobs to LatestJobsSection so it reflects current search/category filters */}
+        <LatestJobsSection jobs={filteredJobs} /> 
         <StatsSection />
         <DownloadSection />
         <NewJobsSection jobs={newJobs} />
