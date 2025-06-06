@@ -11,7 +11,7 @@ interface CategoryCardProps {
 
 const CategoryCard: React.FC<CategoryCardProps> = ({ category }) => {
   return (
-    <Link href={`/?category=${encodeURIComponent(category.name)}`} className="group block">
+    <Link href={`/?category=${encodeURIComponent(category.name)}`} className="group block" scroll={false}>
       <Card className="overflow-hidden h-full transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
         <div className="relative h-48 w-full">
           <Image
